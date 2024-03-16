@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  *
- * Spring Boot application starter class
+ * Spring Boot classe inicial da aplicacao
  */
 @EntityScan(basePackages = "br.com.springboot.projeto.model")
 @SpringBootApplication

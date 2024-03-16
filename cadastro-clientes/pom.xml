@@ -55,6 +55,28 @@
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
+    
+    <!-- adicionado para teste -->
+	<dependency>
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-starter-test</artifactId>
+	    <scope>test</scope>
+	</dependency>
+	
+	<dependency>
+	    <groupId>io.rest-assured</groupId>
+	    <artifactId>spring-mock-mvc</artifactId>
+	    <version>3.0.0</version>
+	    <scope>test</scope>
+	</dependency>
+    
+    <dependency>
+	    <groupId>org.mockito</groupId>
+	    <artifactId>mockito-core</artifactId>
+	    <scope>test</scope>
+	</dependency>
+    
+    <!-- para teste ate aqui-->
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -84,29 +106,9 @@
 	<dependency>
 		<groupId>org.postgresql</groupId>
 		<artifactId>postgresql</artifactId>
-<!-- 		<version>42.3.8</version>  //com essa versao da 404 qdo faz a chamada-->
 		<version>9.4.1210</version>
-<!-- 		<version>9.2-1002-jdbc4</version> -->
-<!-- <scope>runtime</scope> -->
 	</dependency>
 
-	<!-- <dependency>
-	    <groupId>org.hibernate</groupId>
-	    <artifactId>hibernate-core</artifactId>
-	    <version>4.1.4.Final</version>
-	</dependency> -->
-
-	<!-- <dependency>
-	    <groupId>org.hibernate</groupId>
-	    <artifactId>hibernate-entitymanager</artifactId>
-	    <version>5.2.3.Final</version>
-	</dependency> -->
-	
-	<!-- <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-hikaricp</artifactId>
-        <version>5.2.4.Final</version>
-	</dependency> -->
   </dependencies>
 
   <build>

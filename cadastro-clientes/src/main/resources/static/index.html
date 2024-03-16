@@ -116,7 +116,7 @@ html{
 	function colocarEmEdicao(id){
 		$.ajax({
 			method: "GET",
-			url: "buscarUserId",
+			url: "buscarClienteId",
 			data: "idCliente="+ id,
 			success: function (response){
 				$("#id").val(response.id);

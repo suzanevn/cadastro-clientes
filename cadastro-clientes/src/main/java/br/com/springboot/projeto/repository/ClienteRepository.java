@@ -8,6 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import br.com.springboot.projeto.model.Cliente;
 
+/**
+ * 
+ * @author suzane
+ * 
+ * Classe onde os dados são obtidos do banco de dados e ocorre também a regra de negócio. 
+ *
+ */
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
