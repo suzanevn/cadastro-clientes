@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>Projeto Cadastro de Clientes</title>
 
 <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -189,29 +189,51 @@ html{
 			return;
 		}
 		
-		/* if(nome.size()>10){
-			$("#nome").focus();
-			alert("O nome do cliente não pode ter mais de 10 caracteres");
-			return;
-		} */
-		
-		$.ajax({
-			method: "POST",
-			url: "salvar",
-			data: JSON.stringify({id: id, nome: nome, endereco: endereco, bairro: bairro, telefones: telefones}),//TODO passando null
-			contentType: "application/json; charset=utf-8",
-			success: function (response){
-				$("#id").val(response.id);
-				alert("Gravou com sucesso!")
-			}
-		}).fail(function (xhr, status, errorThrown){
-			alert("Erro ao salvar cliente! " + xhr.responseText);
-		});
+		if (nome.length > 10) {
+	        $("#nome").focus();
+	        alert("O nome do cliente não pode ter mais de 10 caracteres");
+	        return;
+	    }
+
+		if(id==null || id==""){
+			$.ajax({
+				method: "POST",
+				url: "salvar",
+				data: JSON.stringify({id: id, nome: nome, endereco: endereco, bairro: bairro, telefones: telefones}),
+				contentType: "application/json; charset=utf-8",
+				success: function (response){
+					$("#id").val(response.id);
+					alert("Gravou com sucesso!")
+				}
+			}).fail(function (xhr, status, errorThrown){
+				alert("Erro ao salvar cliente! " + xhr.responseText);
+			});
+		} else {
+			$.ajax({
+				method: "PUT",
+				url: "atualizar",
+				data: JSON.stringify({id: id, nome: nome, endereco: endereco, bairro: bairro, telefones: telefones}),//TODO passando null
+				contentType: "application/json; charset=utf-8",
+				success: function (response){
+					$("#id").val(response.id);
+					alert("Atualizado com sucesso!")
+				}
+			}).fail(function (xhr, status, errorThrown){
+				alert("Erro ao atualizar cliente! " + xhr.responseText);
+			});
+		}
 	}
 
+	function validarTelefone(telefone) {
+        // Expressão regular para validar o formato do telefone (00) 00000-0000
+        var regexTelefone = /^\(\d{2}\) \d{5}-\d{4}$/;
+        return regexTelefone.test(telefone);
+    }
+	
 	function adicionarTelefone() {
 		var telefone = document.getElementById("telefone").value;
-	    if (telefone.trim() !== "") {
+		
+	    if (telefone.trim() !== "" && validarTelefone(telefone)) {
 	        // Adicionar o telefone à lista
 	        telefones.push(telefone);
 	        var telefoneList = document.getElementById("telefoneList");
@@ -219,10 +241,22 @@ html{
 	        listItem.textContent = telefone;
 	        telefoneList.appendChild(listItem);
 	        
+	     	// Armazenar o número do telefone como um atributo de dados (data)
+	        listItem.dataset.telefone = telefone;
+	     	// Criar o botão "Remover" para remover o telefone
+	        var removerButton = document.createElement("button");
+	        removerButton.textContent = "Remover";
+	        removerButton.className = "btn btn-danger btn-sm ms-2";
+	        removerButton.onclick = function() {
+// 	        	alert("this"+this);
+	            removerTelefone(this);
+	        };
+	        listItem.appendChild(removerButton);
+	        
 	        // Limpar o campo de entrada
 	        document.getElementById("telefone").value = "";
 	    } else {
-	        alert("Por favor, insira um telefone válido.");
+	        alert("Por favor, insira um telefone válido no formato (00) 00000-0000.");
 	    }
 
 	  }
@@ -230,10 +264,12 @@ html{
 	  function removerTelefone(element) {
 	    var telefoneRemovido = element.parentNode.textContent.trim();
 	    var index = telefones.indexOf(telefoneRemovido);
-	    if (index !== -1) {
-	      telefones.splice(index, 1); // Remove o telefone da lista global
+// 	    alert("index "+index);
+	    if (index > -1) {//TODO entrando sempre aqui, verificar
+	      telefones.pop(index, 1); // Remove o telefone da lista global
+	    	element.parentNode.remove();
 	    }
-	    element.parentNode.remove();
+// 	    alert("telfone removido "+telefones);
 	  }
 </script>
 </body>
