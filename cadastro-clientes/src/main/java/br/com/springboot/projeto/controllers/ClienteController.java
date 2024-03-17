@@ -22,13 +22,13 @@ import br.com.springboot.projeto.repository.ClienteRepository;
  * Classe para lidar com a ligação da View com as outras partes do sistema que são a regra de negócio e banco de dados.
  */
 @RestController
-public class ClientesController {
+public class ClienteController {
 	
 	@Autowired
 	private ClienteRepository clienteRepository;
     
     /**
-    * Listagem dos clientes
+    * Listagem de todos os clientes
     * @return lista completa dos clientes
     */
     @GetMapping(value = "listatodos")
@@ -38,47 +38,86 @@ public class ClientesController {
     	return new ResponseEntity<List<Cliente>>(clientes, HttpStatus.OK);
     }
     
-    //TODO criar javadoc
     /**
-    *
-    * @param name the name to greet
-    * @return greeting text
+    * Salva os clientes
+    * @param objeto Cliente
+    * @return http status
     */
     @PostMapping(value = "salvar")
     @ResponseBody
     public ResponseEntity<Cliente> salvar(@RequestBody Cliente cliente){
-    	Cliente user = clienteRepository.save(cliente);
-    	return new ResponseEntity<Cliente>(user, HttpStatus.CREATED);
+    	try {
+            Cliente cli = clienteRepository.save(cliente);
+            return new ResponseEntity<>(cli, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
+    /**
+     * Atualiza os clientes
+     * @param objeto Cliente
+     * @return http status
+     */
     @PutMapping(value = "atualizar")
     @ResponseBody
     public ResponseEntity<?> atualizar(@RequestBody Cliente cliente){
-    	if(cliente.getId() == null)
-    		return new ResponseEntity<String>("Id nao informado para atualizacao", HttpStatus.OK);
-    	Cliente user = clienteRepository.saveAndFlush(cliente);
-    	return new ResponseEntity<Cliente>(user, HttpStatus.OK);
+    	try {
+    		if(cliente.getId() == null)
+    			return new ResponseEntity<String>("Cliente não informado", HttpStatus.OK);
+    		Cliente user = clienteRepository.saveAndFlush(cliente);
+    		return new ResponseEntity<Cliente>(user, HttpStatus.OK);
+    	} catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
+    /**
+     * Apaga os clientes
+     * @param id do Cliente
+     * @return http status
+     */
     @DeleteMapping(value = "delete")
     @ResponseBody
     public ResponseEntity<String> delete(@RequestParam Long idCliente){
-    	clienteRepository.deleteById(idCliente);
-    	return new ResponseEntity<String>("Cliente deletado com sucesso", HttpStatus.OK);
+    	try {
+    		clienteRepository.deleteById(idCliente);
+        	return new ResponseEntity<String>("Cliente deletado com sucesso", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
+    /**
+     * Busca de clientes
+     * @param id do Cliente
+     * @return objeto cliente
+     */
     @GetMapping(value = "buscarClienteId")
     @ResponseBody
     public ResponseEntity<Cliente> buscarClienteId(@RequestParam(name = "idCliente") Long idCliente){
-    	Cliente cliente = clienteRepository.findById(idCliente).get();
-    	return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
+    	try {
+    		Cliente cliente = clienteRepository.findById(idCliente).get();
+        	return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
+    /**
+     * Busca de clientes por nome
+     * @param nome do Cliente
+     * @return objeto cliente
+     */
     @GetMapping(value = "buscarPorNome")
     @ResponseBody
     public ResponseEntity<List<Cliente>> buscarPorNome(@RequestParam(name = "name") String name){
-    	List<Cliente> user = clienteRepository.buscaPorNome(name.trim().toUpperCase());
-    	return new ResponseEntity<List<Cliente>>(user, HttpStatus.OK);
+    	try {
+    		List<Cliente> user = clienteRepository.buscaPorNome(name.trim().toUpperCase());
+        	return new ResponseEntity<List<Cliente>>(user, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
 }

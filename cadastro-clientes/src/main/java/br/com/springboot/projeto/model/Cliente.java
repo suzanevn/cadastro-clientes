@@ -2,13 +2,15 @@ package br.com.springboot.projeto.model;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
@@ -25,8 +27,10 @@ public class Cliente {
     private String endereco;
     private String bairro;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Telefone> telefones;
+    @ElementCollection
+    @CollectionTable(name = "telefones", joinColumns = @JoinColumn(name = "cliente_id"))
+    @Column(name = "numero")
+    private List<String> telefones;
 
 	public Long getId() {
 		return id;
@@ -60,12 +64,12 @@ public class Cliente {
 		this.bairro = bairro;
 	}
 
-	public List<Telefone> getTelefones() {
+	public List<String> getTelefones() {
 		return telefones;
 	}
 
-	public void setTelefones(List<Telefone> telefones) {
+	public void setTelefones(List<String> telefones) {
 		this.telefones = telefones;
 	}
-    
+	
 }

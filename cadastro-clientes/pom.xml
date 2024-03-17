@@ -56,7 +56,7 @@
       <scope>test</scope>
     </dependency>
     
-    <!-- adicionado para teste -->
+    <!-- adicionado para testes -->
 	<dependency>
 	    <groupId>org.springframework.boot</groupId>
 	    <artifactId>spring-boot-starter-test</artifactId>
@@ -76,7 +76,7 @@
 	    <scope>test</scope>
 	</dependency>
     
-    <!-- para teste ate aqui-->
+    <!-- para testes ate aqui-->
 
     <dependency>
       <groupId>org.springframework.boot</groupId>

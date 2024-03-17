@@ -40,10 +40,19 @@ html{
   <label for="bairro" class="form-label">Bairro</label>
   <input type="text" class="form-control" id="bairro">
 </div>
+
+<div class="mb-3">
+  <label for="telefones" class="form-label">Telefones</label>
+  <div class="input-group mt-2">
+        <input type="text" class="form-control" id="telefone" placeholder="Digite o telefone">
+        <button class="btn btn-outline-secondary" type="button" onclick="adicionarTelefone()">Adicionar</button>
+    </div>
+    <ul id="telefoneList"></ul>
+</div>
 </form>
 
 <button type="button" class="btn btn-primary" onclick="salvarCliente()">Salvar</button>
-<button type="button" class="btn btn-secondary" onclick="document.getElementById('formCadastroUser').reset();">Novo</button>
+<button type="button" class="btn btn-secondary" onclick="document.getElementById('formCadastroUser').reset();document.getElementById('telefoneList').innerHTML = '';">Novo</button>
 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalPesquisaCliente">Pesquisar</button>
 <button type="button" class="btn btn-warning" onclick="botaoDeletarDaTela();">Deletar</button>
 
@@ -92,6 +101,7 @@ html{
 
 
 <script type="text/javascript">
+	var telefones = [];
 
 	function pesquisaCliente(){
 		var nome = $("#nomeBusca").val();
@@ -121,9 +131,20 @@ html{
 			success: function (response){
 				$("#id").val(response.id);
 				$("#nome").val(response.nome);
-				$("#endereco").val(response.nome);
-				$("#bairro").val(response.nome);
-				//TODO
+				$("#endereco").val(response.endereco);
+				$("#bairro").val(response.bairro);
+				// Limpar a lista de telefones
+	            document.getElementById("telefoneList").innerHTML = "";
+	            // Preencher a lista de telefones
+	            for (var i = 0; i < response.telefones.length; i++) {
+	                var telefone = response.telefones[i];
+	                telefones.push(telefone); // Adiciona o telefone à lista global
+	                var telefoneList = document.getElementById("telefoneList");
+	                var listItem = document.createElement("li");
+	                listItem.textContent = telefone;
+	                telefoneList.appendChild(listItem);
+	            }
+				
 				$("#modalPesquisaCliente").modal('hide');
 			}
 		}).fail(function (xhr, status, errorThrown){
@@ -147,6 +168,7 @@ html{
 				data: "idCliente="+ id,
 				success: function (response){
 					$('#'+id).remove();
+					document.getElementById("telefoneList").innerHTML = "";
 					alert(response);
 				}
 			}).fail(function (xhr, status, errorThrown){
@@ -176,7 +198,7 @@ html{
 		$.ajax({
 			method: "POST",
 			url: "salvar",
-			data: JSON.stringify({id: id, nome: nome, endereco: endereco, bairro: bairro}),//TODO
+			data: JSON.stringify({id: id, nome: nome, endereco: endereco, bairro: bairro, telefones: telefones}),//TODO passando null
 			contentType: "application/json; charset=utf-8",
 			success: function (response){
 				$("#id").val(response.id);
@@ -186,6 +208,33 @@ html{
 			alert("Erro ao salvar cliente! " + xhr.responseText);
 		});
 	}
+
+	function adicionarTelefone() {
+		var telefone = document.getElementById("telefone").value;
+	    if (telefone.trim() !== "") {
+	        // Adicionar o telefone à lista
+	        telefones.push(telefone);
+	        var telefoneList = document.getElementById("telefoneList");
+	        var listItem = document.createElement("li");
+	        listItem.textContent = telefone;
+	        telefoneList.appendChild(listItem);
+	        
+	        // Limpar o campo de entrada
+	        document.getElementById("telefone").value = "";
+	    } else {
+	        alert("Por favor, insira um telefone válido.");
+	    }
+
+	  }
+
+	  function removerTelefone(element) {
+	    var telefoneRemovido = element.parentNode.textContent.trim();
+	    var index = telefones.indexOf(telefoneRemovido);
+	    if (index !== -1) {
+	      telefones.splice(index, 1); // Remove o telefone da lista global
+	    }
+	    element.parentNode.remove();
+	  }
 </script>
 </body>
 </html>
