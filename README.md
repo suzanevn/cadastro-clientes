@@ -8,6 +8,7 @@ Projeto básico para cadastro de clientes
 - no arquivo application.properties alterar usuario e senha conforme o seu postgres
 	spring.datasource.username=USUARIO
 	spring.datasource.password=SENHA
+- As tabelas são geradas ao rodar o sistema
 
 - Link para acesso da tela principal http://localhost:8000/cadastroClientes/
 
@@ -20,3 +21,7 @@ O botão Ver traz os dados para edição na tela e o deletar apaga o registro.
 - pode ser feita a requição atraves de endpoint, como: http://localhost:8000/cadastroClientes/listaTodos
 
 Para o desenvolvimento foi utilizado Java 11, Spring, Maven e tela html com javascript
+
+- o arquivo executavel .jar está no caminho:
+cadastro-clientes/cadastro-clientes/src/cadastro-clientes-1.0.0-SNAPSHOT.jar
+configurado para o banco: bancoClientes com usuario e senha padrao: postgres
