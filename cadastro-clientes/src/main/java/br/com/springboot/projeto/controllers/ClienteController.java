@@ -47,9 +47,6 @@ public class ClienteController {
     @ResponseBody
     public ResponseEntity<?> salvar(@RequestBody Cliente cliente){
     	try {
-    		ResponseEntity<List<Cliente>> existe = buscarPorNome(cliente.getNome());
-    		if(existe.getBody().size() > 0)
-    			return new ResponseEntity<>("Nome ja cadastrado!", HttpStatus.BAD_REQUEST);
     		ResponseEntity<String> retornoValida = validaClienteETelefone(cliente, false);
     		if(retornoValida == null){
     			Cliente cli = clienteRepository.save(cliente);
@@ -58,45 +55,10 @@ public class ClienteController {
     			return retornoValida;
     		}
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     
-    /**
-     * Valida cliente e telefone
-     * @param objeto Cliente e booleano para informar se é inserir ou editar
-     * @return ResponseEntity null se tudo estiver ok, ou retorna mensagem informando o problema
-     */
-	private ResponseEntity<String> validaClienteETelefone(Cliente cliente, boolean atualizar) {
-		if(cliente.getNome().length() <= 10)
-			return new ResponseEntity<>("O nome do cliente não pode ter menos de 10 caracteres!", HttpStatus.BAD_REQUEST);
-		boolean existeTelefone = false;
-		for (String telefone : cliente.getTelefones()) {
-			if(telefone==null || telefone.isEmpty()) {
-				return new ResponseEntity<>("Telefone não pode ter valor vazio!", HttpStatus.BAD_REQUEST);
-			}
-			if(!telefone.matches("\\(\\d{2}\\) \\d{5}-\\d{4}")) {
-				return new ResponseEntity<>("Telefone deve estar no formato (99) 99999-9999!", HttpStatus.BAD_REQUEST);
-			}
-			ResponseEntity<List<Cliente>> existe = buscarPorTelefone(telefone);
-			if(existe.getBody().size() > 0) {
-				if(atualizar) {
-					List<Cliente> clientesRetornados = existe.getBody();
-					for (Cliente clienteRetornado : clientesRetornados) {
-						if(!clienteRetornado.getId().equals(cliente.getId())) {
-							existeTelefone = true;
-							break;
-						}
-					}
-				} else {
-					existeTelefone = true;
-					break;
-				}
-			} 
-		}
-		return existeTelefone ? new ResponseEntity<>("Telefone ja cadastrado!", HttpStatus.BAD_REQUEST) : null;
-	}
-
 	/**
      * Atualiza os clientes
      * @param objeto Cliente
@@ -107,7 +69,7 @@ public class ClienteController {
     public ResponseEntity<?> atualizar(@RequestBody Cliente cliente){
     	try {
     		if(cliente.getId() == null)
-    			return new ResponseEntity<String>("Cliente não informado", HttpStatus.OK);
+    			return new ResponseEntity<String>("Cliente não informado", HttpStatus.BAD_REQUEST);
     		ResponseEntity<String> retornoValidaTelefone = validaClienteETelefone(cliente, true);
     		if(retornoValidaTelefone == null) {
 	    		Cliente user = clienteRepository.save(cliente);
@@ -183,5 +145,56 @@ public class ClienteController {
     		return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     	}
     }
+    
+    /**
+     * Valida cliente e telefone
+     * @param objeto Cliente e booleano para informar se é inserir ou editar
+     * @return ResponseEntity null se tudo estiver ok, ou retorna mensagem informando o problema
+     */
+	private ResponseEntity<String> validaClienteETelefone(Cliente cliente, boolean atualizar) {
+		ResponseEntity<List<Cliente>> existe = buscarPorNome(cliente.getNome());
+		if(existe.getBody().size() > 0) {
+			//Melhorar buscando o id direto no select
+			if(!atualizar) {
+				return new ResponseEntity<>("Nome ja cadastrado!", HttpStatus.BAD_REQUEST);
+			} else {
+				List<Cliente> clienteRetornado = existe.getBody();
+				for (Cliente c : clienteRetornado) {
+					if(!c.getId().equals(cliente.getId())) {
+						return new ResponseEntity<>("Nome ja cadastrado!", HttpStatus.BAD_REQUEST);
+					}
+				} 
+			}
+		}
+		if(cliente.getNome().length() <= 10)
+			return new ResponseEntity<>("O nome do cliente não pode ter menos de 10 caracteres!", HttpStatus.BAD_REQUEST);
+		boolean existeTelefone = false;
+		if( cliente.getTelefones() != null) {
+			for (String telefone : cliente.getTelefones()) {
+				if(telefone==null || telefone.isEmpty()) {
+					return new ResponseEntity<>("Telefone não pode ter valor vazio!", HttpStatus.BAD_REQUEST);
+				}
+				if(!telefone.matches("\\(\\d{2}\\) \\d{5}-\\d{4}")) {
+					return new ResponseEntity<>("Telefone deve estar no formato (99) 99999-9999!", HttpStatus.BAD_REQUEST);
+				}
+				ResponseEntity<List<Cliente>> existeTelefoneList = buscarPorTelefone(telefone);
+				if(existeTelefoneList.getBody().size() > 0) {
+					if(atualizar) {
+						List<Cliente> clientesRetornados = existeTelefoneList.getBody();
+						for (Cliente clienteRetornado : clientesRetornados) {
+							if(!clienteRetornado.getId().equals(cliente.getId())) {
+								existeTelefone = true;
+								break;
+							}
+						}
+					} else {
+						existeTelefone = true;
+						break;
+					}
+				} 
+			}
+		}
+		return existeTelefone ? new ResponseEntity<>("Telefone ja cadastrado!", HttpStatus.BAD_REQUEST) : null;
+	}
     
 }
